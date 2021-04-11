@@ -13,7 +13,6 @@ export default class UserManager extends React.Component {
     }
 
     getData = () => {
-        let url = 'http://localhost:3030/users'
         return getUsers()
             .then(users => {
                 this.setState({ users: users })
