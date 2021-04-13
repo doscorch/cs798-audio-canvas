@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Alert from '@material-ui/lab/Alert';
 
-import { registerUser } from '../services/usersService';
+import { registerUser, getUser } from '../services/usersService';
 const initState = {
     email: "",
     password: "",
@@ -27,12 +27,25 @@ export default class Register extends React.Component {
     registerUser = async (e) => {
         e.preventDefault();
         // error handling
+        if (!this.state.firstName) {
+            this.setState({ error: "please provide a first name" })
+            return;
+        }
+        if (!this.state.lastName) {
+            this.setState({ error: "please provide a last name" })
+            return;
+        }
         if (!this.state.email) {
-            this.setState({ error: "please provide email" })
+            this.setState({ error: "please provide an email" })
             return;
         }
         if (!this.state.password) {
-            this.setState({ error: "please provide password" })
+            this.setState({ error: "please provide a password" })
+            return;
+        }
+
+        if (await getUser(this.state.email)) {
+            this.setState({ error: "user with this email address already exists" })
             return;
         }
 

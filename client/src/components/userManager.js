@@ -2,8 +2,9 @@ import * as React from 'react';
 import MaterialTable from 'material-table';
 import { Select, MenuItem } from '@material-ui/core'
 import { getUsers, patchUser } from '../services/usersService';
+import { connect } from 'react-redux';
 
-export default class UserManager extends React.Component {
+class UserManager extends React.Component {
     state = {
         users: []
     }
@@ -13,10 +14,15 @@ export default class UserManager extends React.Component {
     }
 
     getData = () => {
-        return getUsers()
-            .then(users => {
-                this.setState({ users: users })
-            })
+        if (this.props.user && this.props.user.userRole === "admin") {
+            return getUsers()
+                .then(users => {
+                    this.setState({ users: users })
+                })
+        }
+        else {
+            this.setState({ users: [] })
+        }
     }
 
     render() {
@@ -33,8 +39,8 @@ export default class UserManager extends React.Component {
                 columns={[
                     // { title: 'Id', field: '_id' },
                     { title: 'Email', field: 'email', editable: false },
-                    { title: 'First Name', field: 'firstName' },
-                    { title: 'Last Name', field: 'lastName' },
+                    { title: 'First Name', field: 'firstName', validate: u => u.firstName == "" ? { isValid: false, helperText: "required" } : { isValid: true } },
+                    { title: 'Last Name', field: 'lastName', validate: u => u.lastName == "" ? { isValid: false, helperText: "required" } : { isValid: true } },
                     {
                         title: 'User Role',
                         field: 'userRole',
@@ -74,3 +80,8 @@ export default class UserManager extends React.Component {
     }
 
 }
+
+const mapState = (state) => { return { user: state.user } };
+const mapDispatch = {};
+
+export default connect(mapState, mapDispatch)(UserManager);
